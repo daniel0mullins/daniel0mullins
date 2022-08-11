@@ -1,4 +1,4 @@
-### Hi there 👋
+<a href="https://app.daily.dev/daniel0mullins"><img src="https://api.daily.dev/devcards/afa4b3c71f934cbeaef798104be9e987.png?r=qb0" width="400" alt="Daniel Mullins's Dev Card"/></a>
 
 <!--
 **daniel0mullins/daniel0mullins** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
