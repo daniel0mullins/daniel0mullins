@@ -19,6 +19,31 @@ Then open <http://localhost:8000/>.
 There is no build step and no install step — the only dependency, `chess.js`,
 is vendored in `lib/`.
 
+## Publishing to GitHub Pages
+
+Because everything is static and pre-vendored, Pages can serve the directory
+directly — no workflow or build required.
+
+1. Merge this branch into `main`.
+2. In the repository, go to **Settings → Pages**.
+3. Under **Build and deployment**, set **Source** to *Deploy from a branch*,
+   then pick branch `main` and folder `/ (root)`.
+4. Save, and wait for the deployment to finish.
+
+This repository is `daniel0mullins/daniel0mullins`, so Pages publishes it as the
+user site at `https://daniel0mullins.github.io/`, and the app lands at
+**https://daniel0mullins.github.io/chess/**.
+
+Two things to be aware of:
+
+- Enabling Pages on this repository publishes the *whole* repository, not just
+  `chess/`. That is fine for a public profile repo, but worth knowing.
+- `.nojekyll` in this directory tells Pages to skip Jekyll and serve the files
+  untouched.
+
+Serving over HTTPS also satisfies the ES-module requirement that makes `file://`
+fail locally.
+
 ## Playing
 
 - **Choose a side** — white, black, or random. Playing black flips the board and
