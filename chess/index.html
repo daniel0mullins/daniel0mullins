@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Play Chess vs. Computer</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='28'>%E2%99%9E</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="app">
+  <h1>Chess</h1>
+
+  <!-- Pre-game setup -->
+  <section id="setup" class="panel setup">
+    <h2>New game</h2>
+
+    <div class="field">
+      <span class="field-label">Play as</span>
+      <div class="choices" id="side-choices" role="radiogroup" aria-label="Play as">
+        <button type="button" class="choice selected" data-side="w" role="radio" aria-checked="true">
+          <span class="choice-piece">&#9812;</span> White
+        </button>
+        <button type="button" class="choice" data-side="b" role="radio" aria-checked="false">
+          <span class="choice-piece black">&#9818;</span> Black
+        </button>
+        <button type="button" class="choice" data-side="random" role="radio" aria-checked="false">
+          <span class="choice-piece">&#10052;</span> Random
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="elo">Computer strength</label>
+      <div class="elo-row">
+        <input type="range" id="elo" min="0" max="9" step="1" value="4">
+        <output id="elo-value" for="elo">1200 ELO</output>
+      </div>
+      <p id="elo-hint" class="hint">Club-level: solid basics, still misses tactics.</p>
+    </div>
+
+    <button type="button" id="start" class="primary">Start game</button>
+  </section>
+
+  <!-- Game -->
+  <section id="game" class="game hidden">
+    <div class="board-wrap">
+      <div id="board" class="board" role="grid" aria-label="Chess board"></div>
+    </div>
+
+    <aside class="panel sidebar">
+      <div class="players">
+        <div class="player" id="player-top">
+          <span class="dot"></span>
+          <span class="player-name">Computer</span>
+          <span class="captured" id="captured-top"></span>
+        </div>
+        <div class="player" id="player-bottom">
+          <span class="dot"></span>
+          <span class="player-name">You</span>
+          <span class="captured" id="captured-bottom"></span>
+        </div>
+      </div>
+
+      <p id="status" class="status">Your move.</p>
+
+      <div class="moves-wrap">
+        <ol id="moves" class="moves"></ol>
+      </div>
+
+      <div class="controls">
+        <button type="button" id="undo">Undo</button>
+        <button type="button" id="flip">Flip board</button>
+        <button type="button" id="resign">Resign</button>
+        <button type="button" id="new-game" class="primary">New game</button>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<!-- Pawn promotion picker -->
+<div id="promotion" class="overlay hidden">
+  <div class="promotion-box">
+    <p>Promote to</p>
+    <div class="promotion-choices" id="promotion-choices"></div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
