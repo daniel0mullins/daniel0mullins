@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+<meta name="description" content="An intentionally annoying task tracker for ADHD/AuDHD brains.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Nag">
+<title>Nag</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">!</span>
+    <span class="brand-name">Nag</span>
+  </div>
+  <nav class="tabs" aria-label="Sections">
+    <a class="tab" href="#tasks" data-view="tasks" aria-current="page">
+      <span class="tab-icon" aria-hidden="true">☐</span><span>Tasks</span>
+    </a>
+    <a class="tab" href="#dashboard" data-view="dashboard">
+      <span class="tab-icon" aria-hidden="true">▤</span><span>Friction</span>
+    </a>
+    <a class="tab" href="#settings" data-view="settings">
+      <span class="tab-icon" aria-hidden="true">⚙</span><span>Settings</span>
+    </a>
+  </nav>
+</header>
+
+<div id="sim-banner" class="sim-banner" role="status" hidden>
+  <span id="sim-banner-text"></span>
+  <button type="button" class="btn small ghost" id="sim-banner-reset">Reset clock</button>
+</div>
+
+<main id="main" class="app">
+
+  <!-- ===================== Tasks ===================== -->
+  <section class="view" data-view="tasks" id="view-tasks">
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Tasks</h1>
+        <p class="view-sub" id="today-sub"></p>
+      </div>
+      <a class="btn primary" href="#new" id="new-task">+ New task</a>
+    </div>
+
+    <section class="group" id="group-now" hidden aria-labelledby="h-now">
+      <h2 class="group-title" id="h-now">Nagging now</h2>
+      <ul class="tasks" id="list-now"></ul>
+    </section>
+
+    <section class="group" aria-labelledby="h-next">
+      <h2 class="group-title" id="h-next">Up next</h2>
+      <ul class="tasks" id="list-next"></ul>
+      <div class="empty" id="empty-next" hidden>
+        <p><strong>Nothing scheduled.</strong> Add something you keep forgetting, give it a time, and Nag will not let it go.</p>
+        <p class="muted small">Want to see it in action first? <button type="button" class="link" id="empty-demo">Load demo data</button>.</p>
+      </div>
+    </section>
+
+    <details class="group done-group" id="group-done">
+      <summary class="group-title">Done <span class="count" id="done-count">0</span></summary>
+      <ul class="tasks" id="list-done"></ul>
+      <p class="empty small muted" id="empty-done" hidden>Nothing completed yet.</p>
+    </details>
+
+    <section class="panel sim" aria-labelledby="h-sim">
+      <h2 class="panel-title" id="h-sim">Simulate time</h2>
+      <p class="muted small">Prototype control. Moves the app clock forward so you can watch the nag loop without waiting.</p>
+      <div class="sim-controls">
+        <button type="button" class="btn" data-sim="300">+5 min</button>
+        <button type="button" class="btn" data-sim="3600">+1 hour</button>
+        <button type="button" class="btn" data-sim="86400">+1 day</button>
+        <button type="button" class="btn" id="sim-next">Jump to next alert</button>
+      </div>
+    </section>
+  </section>
+
+  <!-- ===================== New / edit task ===================== -->
+  <section class="view" data-view="form" id="view-form" hidden>
+    <form id="task-form" novalidate>
+      <div class="view-head">
+        <h1 class="view-title" id="form-title">New task</h1>
+        <a class="btn ghost" href="#tasks" id="form-cancel">Cancel</a>
+      </div>
+
+      <div class="field">
+        <label class="label" for="f-title">What needs doing?</label>
+        <input class="input" id="f-title" name="title" type="text" maxlength="200" autocomplete="off" placeholder="e.g. Call the dentist" aria-describedby="e-title">
+        <p class="error" id="e-title" hidden></p>
+      </div>
+
+      <div class="field">
+        <label class="label" for="f-category">Type <span class="muted">(optional)</span></label>
+        <input class="input" id="f-category" name="category" list="category-list" autocomplete="off" placeholder="chores, admin, health…" aria-describedby="h-category e-category">
+        <datalist id="category-list"></datalist>
+        <p class="hint" id="h-category">The dashboard groups by type to show which kinds of task you snooze most.</p>
+        <p class="error" id="e-category" hidden></p>
+      </div>
+
+      <fieldset class="field">
+        <legend class="label">When</legend>
+        <div class="when-grid">
+          <div>
+            <label class="sublabel" for="f-date">Date</label>
+            <input class="input" id="f-date" name="date" type="date" aria-describedby="e-date">
+            <p class="error" id="e-date" hidden></p>
+          </div>
+          <div>
+            <span class="sublabel" id="l-kind">Time anchor</span>
+            <div class="segmented" role="radiogroup" aria-labelledby="l-kind" id="kind-picker">
+              <button type="button" role="radio" aria-checked="true" data-kind="exact">Exact time</button>
+              <button type="button" role="radio" aria-checked="false" data-kind="fuzzy">Part of the day</button>
+            </div>
+          </div>
+        </div>
+        <div id="anchor-exact">
+          <label class="sublabel" for="f-time">Time</label>
+          <input class="input" id="f-time" name="time" type="time" aria-describedby="e-time">
+          <p class="error" id="e-time" hidden></p>
+        </div>
+        <div id="anchor-fuzzy" hidden>
+          <span class="sublabel" id="l-period">Part of the day</span>
+          <div class="choices" role="radiogroup" aria-labelledby="l-period" id="period-picker"></div>
+          <p class="error" id="e-period" hidden></p>
+        </div>
+        <p class="hint" id="anchor-preview"></p>
+      </fieldset>
+
+      <fieldset class="field">
+        <legend class="label">Spoons <span class="muted">(energy it takes)</span></legend>
+        <div class="spoons-picker" role="radiogroup" aria-label="Spoons" id="spoons-picker"></div>
+        <p class="hint" id="spoons-hint"></p>
+        <p class="error" id="e-spoons" hidden></p>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="submit" class="btn primary big" id="form-submit">Add task</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ===================== Dashboard ===================== -->
+  <section class="view" data-view="dashboard" id="view-dashboard" hidden>
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Friction</h1>
+        <p class="view-sub">Which tasks get done, and which get snoozed.</p>
+      </div>
+    </div>
+
+    <div class="empty" id="dash-empty" hidden>
+      <p><strong>No history yet.</strong> The dashboard fills in once tasks have been alerted, snoozed or completed.</p>
+      <p class="muted small">Or <button type="button" class="link" id="dash-demo">load demo data</button> to see what it looks like.</p>
+    </div>
+
+    <div id="dash-content">
+      <div class="kpis" id="kpis"></div>
+
+      <div class="two-col">
+        <section class="panel" aria-labelledby="h-hardest">
+          <h2 class="panel-title" id="h-hardest">Hardest types</h2>
+          <p class="muted small">Most snoozes and out-of-spoons presses per task.</p>
+          <ol class="ranking" id="hardest"></ol>
+        </section>
+        <section class="panel" aria-labelledby="h-easiest">
+          <h2 class="panel-title" id="h-easiest">Easiest types</h2>
+          <p class="muted small">Done with the fewest snoozes.</p>
+          <ol class="ranking" id="easiest"></ol>
+        </section>
+      </div>
+
+      <section class="panel" aria-labelledby="h-insights">
+        <h2 class="panel-title" id="h-insights">What the data says</h2>
+        <ul class="insights" id="insights"></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="h-bycat">
+        <h2 class="panel-title" id="h-bycat">By type</h2>
+        <div class="table-wrap"><table class="data" id="table-category"></table></div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-byspoons">
+        <h2 class="panel-title" id="h-byspoons">By spoon size</h2>
+        <div class="table-wrap"><table class="data" id="table-spoons"></table></div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-byperiod">
+        <h2 class="panel-title" id="h-byperiod">By part of the day</h2>
+        <div class="table-wrap"><table class="data" id="table-period"></table></div>
+      </section>
+
+      <p class="muted small" id="dash-method"></p>
+    </div>
+  </section>
+
+  <!-- ===================== Settings ===================== -->
+  <section class="view" data-view="settings" id="view-settings" hidden>
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Settings</h1>
+        <p class="view-sub">Everything is stored on this device.</p>
+      </div>
+    </div>
+
+    <form id="settings-form">
+      <section class="panel" aria-labelledby="h-periods">
+        <h2 class="panel-title" id="h-periods">Parts of the day</h2>
+        <p class="muted small">When a fuzzy anchor like "morning" starts nagging.</p>
+        <div class="settings-grid" id="period-settings"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-oos">
+        <h2 class="panel-title" id="h-oos">Out of spoons</h2>
+        <div class="settings-grid">
+          <div class="setting">
+            <label class="sublabel" for="s-daystart">Deferred tasks come back at</label>
+            <input class="input" type="time" id="s-daystart" name="dayStart">
+          </div>
+          <div class="setting">
+            <label class="sublabel" for="s-weekstart">Week starts on</label>
+            <select class="input" id="s-weekstart" name="weekStartsOn">
+              <option value="1">Monday</option>
+              <option value="6">Saturday</option>
+              <option value="0">Sunday</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-alerts">
+        <h2 class="panel-title" id="h-alerts">Alerts</h2>
+        <div class="settings-grid">
+          <label class="check"><input type="checkbox" id="s-sound" name="sound"> <span>Sound</span></label>
+          <label class="check"><input type="checkbox" id="s-vibrate" name="vibrate"> <span>Vibration (where supported)</span></label>
+          <div class="setting">
+            <label class="sublabel" for="s-nag">Re-nag an unanswered alert every</label>
+            <select class="input" id="s-nag" name="nagEverySeconds">
+              <option value="15">15 seconds</option>
+              <option value="30">30 seconds</option>
+              <option value="60">1 minute</option>
+              <option value="120">2 minutes</option>
+            </select>
+          </div>
+        </div>
+        <div class="setting-row">
+          <button type="button" class="btn" id="notif-enable">Enable system notifications</button>
+          <span class="muted small" id="notif-status"></span>
+        </div>
+      </section>
+    </form>
+
+    <section class="panel" aria-labelledby="h-data">
+      <h2 class="panel-title" id="h-data">Data</h2>
+      <p class="muted small" id="storage-status"></p>
+      <div class="setting-row wrap">
+        <button type="button" class="btn" id="data-demo">Load demo data</button>
+        <button type="button" class="btn" id="data-export">Export JSON</button>
+        <button type="button" class="btn" id="data-import">Import JSON</button>
+        <input type="file" id="data-file" accept="application/json,.json" hidden>
+        <button type="button" class="btn danger-ghost" id="data-erase">Erase everything</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="h-how">
+      <h2 class="panel-title" id="h-how">How the nagging works</h2>
+      <div class="table-wrap"><table class="data" id="table-policy"></table></div>
+      <p class="muted small">Every snooze escalates the alert and must be shorter than the last one, down to a one-minute floor. "Out of spoons" parks the task until tomorrow, next week or next month and resets the cascade, but counts double in the friction score.</p>
+    </section>
+  </section>
+</main>
+
+<!-- ===================== The alert ===================== -->
+<dialog id="alert" class="alert tier-calm" aria-labelledby="alert-heading" aria-describedby="alert-task">
+  <div class="alert-inner">
+    <p class="alert-kicker" id="alert-kicker"></p>
+    <h2 class="alert-heading" id="alert-heading"></h2>
+    <p class="alert-task" id="alert-task"></p>
+    <p class="alert-meta" id="alert-meta"></p>
+    <p class="alert-sub" id="alert-sub"></p>
+
+    <div class="alert-actions">
+      <button type="button" class="btn done big" data-alert="complete">Yes, it's done</button>
+
+      <div class="snooze-block" id="snooze-block">
+        <p class="alert-label">Not yet · snooze for</p>
+        <div class="snooze-row" id="snooze-row"></div>
+        <p class="alert-note" id="snooze-note"></p>
+      </div>
+
+      <button type="button" class="btn spoons big" data-alert="oos" id="alert-oos">I'm out of spoons</button>
+
+      <div class="oos-block" id="oos-block" hidden>
+        <p class="alert-label">No capacity today. Park it until:</p>
+        <div class="oos-row" id="oos-row"></div>
+        <button type="button" class="btn ghost-on-tier" data-alert="oos-back">Back</button>
+      </div>
+    </div>
+
+    <p class="alert-wait" id="alert-wait" aria-live="polite"></p>
+    <p class="alert-queue" id="alert-queue" hidden></p>
+  </div>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script type="module" src="src/app.js"></script>
+</body>
+</html>
