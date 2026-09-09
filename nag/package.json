@@ -1,0 +1,13 @@
+{
+  "name": "nag",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An intentionally annoying task tracker for ADHD/AuDHD brains.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "e2e": "node test/e2e.mjs",
+    "build": "node tools/build.mjs",
+    "serve": "python3 -m http.server 8000"
+  }
+}

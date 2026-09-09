@@ -1,0 +1,14 @@
+{
+  "name": "Nag",
+  "short_name": "Nag",
+  "description": "An intentionally annoying task tracker for ADHD/AuDHD brains.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d0d0d",
+  "theme_color": "#d03b3b",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
