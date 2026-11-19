@@ -2,6 +2,8 @@
 
 Chrome extension (Manifest V3) that reloads every tab in a tab group.
 
+![Popup with four tab groups](screenshot.png)
+
 ## Install
 1. Open `chrome://extensions`.
 2. Enable **Developer mode**.
