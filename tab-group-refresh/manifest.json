@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Group Refresh",
+  "version": "1.0.0",
+  "description": "Reload every tab in a tab group at once.",
+  "permissions": ["tabs", "tabGroups", "contextMenus"],
+  "background": { "service_worker": "background.js" },
+  "action": {
+    "default_title": "Refresh tab groups",
+    "default_popup": "popup.html"
+  },
+  "commands": {
+    "refresh-current-group": {
+      "suggested_key": { "default": "Alt+Shift+R" },
+      "description": "Refresh all tabs in the current tab's group"
+    }
+  }
+}
