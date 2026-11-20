@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Tab Group Refresh",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Reload every tab in a tab group at once.",
-  "permissions": ["tabs", "tabGroups", "contextMenus"],
+  "permissions": ["tabGroups", "contextMenus"],
   "background": { "service_worker": "background.js" },
   "action": {
     "default_title": "Refresh tab groups",
